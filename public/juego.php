@@ -619,27 +619,16 @@ function renderBombaMusicalContent($currentRound)
             transition: background 0.3s, opacity 0.3s;
         }
 
-        .answer-btn:hover:not(.correct-answer):not(.incorrect-answer):not(:disabled) {
+        .answer-btn:hover:not(:disabled) {
             background: #505050;
         }
 
-        .answer-btn:disabled {
+        /* Disabled state only for initial state, not for answered buttons */
+        .answer-btn:disabled:not([style*="background"]) {
             background: #2a2a2a;
             color: #666;
             cursor: not-allowed;
             opacity: 0.5;
-        }
-
-        .answer-btn.correct-answer {
-            background: #4CAF50 !important;
-            color: white !important;
-            cursor: default !important;
-        }
-
-        .answer-btn.incorrect-answer {
-            background: #f44336 !important;
-            color: white !important;
-            cursor: default !important;
         }
 
         .buzz-container {
@@ -1101,7 +1090,7 @@ function renderBombaMusicalContent($currentRound)
 
         function handleAnswerResult(data) {
             console.log('📊 handleAnswerResult:', data);
-
+            
             // Update Scores
             if (data.scores) {
                 for (const [pId, score] of Object.entries(data.scores)) {
@@ -1112,18 +1101,45 @@ function renderBombaMusicalContent($currentRound)
                 }
             }
 
-            // Visual Feedback
+            // Visual Feedback - AGGRESSIVE COLOR APPLICATION
             if (data.answer_index !== undefined) {
                 const buttons = document.querySelectorAll('.answer-btn');
                 if (buttons[data.answer_index]) {
                     const selectedButton = buttons[data.answer_index];
                     const color = data.correct ? '#4CAF50' : '#f44336';
-
-                    selectedButton.style.backgroundColor = color;
-                    selectedButton.style.color = 'white';
+                    const bgName = data.correct ? 'VERDE (correcta)' : 'ROJO (incorrecta)';
+                    
+                    console.log(`🎨 Aplicando color ${bgName} al botón ${data.answer_index}`);
+                    
+                    // Remove all existing classes
+                    selectedButton.className = 'answer-btn';
+                    
+                    // Method 1: cssText (most aggressive)
+                    selectedButton.style.cssText = `
+                        background: ${color} !important;
+                        background-color: ${color} !important;
+                        color: white !important;
+                        border: 3px solid ${color} !important;
+                        opacity: 1 !important;
+                        cursor: default !important;
+                        font-weight: bold !important;
+                    `;
+                    
+                    // Method 2: Direct properties
+                    selectedButton.style.setProperty('background', color, 'important');
+                    selectedButton.style.setProperty('background-color', color, 'important');
+                    selectedButton.style.setProperty('color', 'white', 'important');
+                    
+                    // Method 3: Disable button
                     selectedButton.disabled = true;
-
-                    console.log(`Botón ${data.answer_index} → ${color}`);
+                    
+                    // Force reflow
+                    void selectedButton.offsetHeight;
+                    
+                    console.log(`✅ Color aplicado. Verificación:`, {
+                        backgroundColor: selectedButton.style.backgroundColor,
+                        computedBg: window.getComputedStyle(selectedButton).backgroundColor
+                    });
                 }
             }
 
