@@ -1157,6 +1157,7 @@ function renderBombaMusicalContent($currentRound)
                 }
 
                 if (String(data.playerId) === String(playerId)) {
+                    // I failed - disable all my buttons
                     const buttons = document.querySelectorAll('.answer-btn');
                     buttons.forEach(btn => btn.disabled = true);
 
@@ -1165,16 +1166,23 @@ function renderBombaMusicalContent($currentRound)
                         buzzContainer.style.display = 'block';
                     }
                 } else {
-                    const answerContainer = document.getElementById('answer-container');
-                    if (answerContainer) {
-                        answerContainer.style.display = 'none';
-                    }
+                    // Another player failed - allow rebote
+                    console.log('🔄 Otro jugador falló, permitiendo rebote');
 
+                    // Disable answer buttons (they'll be enabled when someone buzzes)
+                    const buttons = document.querySelectorAll('.answer-btn');
+                    buttons.forEach(btn => {
+                        btn.disabled = true;
+                        btn.style.opacity = '0.5';
+                    });
+
+                    // Re-enable buzz button for everyone
                     const buzzBtn = document.getElementById('buzz-container');
                     if (buzzBtn) {
                         buzzBtn.style.display = 'block';
                     }
 
+                    // Clear buzz order
                     const list = document.getElementById('buzz-order');
                     if (list) list.innerHTML = '';
                 }
