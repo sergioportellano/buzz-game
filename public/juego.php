@@ -1090,7 +1090,7 @@ function renderBombaMusicalContent($currentRound)
 
         function handleAnswerResult(data) {
             console.log('📊 handleAnswerResult:', data);
-            
+
             // Update Scores
             if (data.scores) {
                 for (const [pId, score] of Object.entries(data.scores)) {
@@ -1108,12 +1108,12 @@ function renderBombaMusicalContent($currentRound)
                     const selectedButton = buttons[data.answer_index];
                     const color = data.correct ? '#4CAF50' : '#f44336';
                     const bgName = data.correct ? 'VERDE (correcta)' : 'ROJO (incorrecta)';
-                    
+
                     console.log(`🎨 Aplicando color ${bgName} al botón ${data.answer_index}`);
-                    
+
                     // Remove all existing classes
                     selectedButton.className = 'answer-btn';
-                    
+
                     // Method 1: cssText (most aggressive)
                     selectedButton.style.cssText = `
                         background: ${color} !important;
@@ -1124,18 +1124,18 @@ function renderBombaMusicalContent($currentRound)
                         cursor: default !important;
                         font-weight: bold !important;
                     `;
-                    
+
                     // Method 2: Direct properties
                     selectedButton.style.setProperty('background', color, 'important');
                     selectedButton.style.setProperty('background-color', color, 'important');
                     selectedButton.style.setProperty('color', 'white', 'important');
-                    
+
                     // Method 3: Disable button
                     selectedButton.disabled = true;
-                    
+
                     // Force reflow
                     void selectedButton.offsetHeight;
-                    
+
                     console.log(`✅ Color aplicado. Verificación:`, {
                         backgroundColor: selectedButton.style.backgroundColor,
                         computedBg: window.getComputedStyle(selectedButton).backgroundColor
@@ -1184,23 +1184,32 @@ function renderBombaMusicalContent($currentRound)
                 } else {
                     // Another player failed - allow rebote
                     console.log('🔄 Otro jugador falló, permitiendo rebote');
-                    
-                    // Show notification that player failed
-                    if (buzzContainer) {
-                        buzzContainer.innerHTML = `<div style="background: #ff5722; color: white; padding: 15px; border-radius: 10px; font-size: 1.1em; text-align: center; animation: pulse 0.5s;">
-                            ❌ Jugador ${data.playerId} ha fallado<br>
-                            <span style="font-size: 0.9em;">¡Puedes hacer BUZZ para intentarlo!</span>
-                        </div>`;
-                        buzzContainer.style.display = 'block';
-                        
-                        // Hide notification after 3 seconds
-                        setTimeout(() => {
-                            if (buzzContainer) {
-                                buzzContainer.innerHTML = '';
-                            }
-                        }, 3000);
+
+                    // Show notification that player failed (above the buzz button)
+                    let notificationEl = document.getElementById('rebote-notification');
+                    if (!notificationEl) {
+                        notificationEl = document.createElement('div');
+                        notificationEl.id = 'rebote-notification';
+                        notificationEl.style.cssText = 'margin: 15px 0; text-align: center;';
+                        const roundContent = document.getElementById('round-content');
+                        if (roundContent) {
+                            roundContent.insertBefore(notificationEl, roundContent.firstChild);
+                        }
                     }
-                    
+
+                    notificationEl.innerHTML = `<div style="background: #ff5722; color: white; padding: 15px; border-radius: 10px; font-size: 1.1em; text-align: center; animation: pulse 0.5s;">
+                        ❌ Jugador ${data.playerId} ha fallado<br>
+                        <span style="font-size: 0.9em;">¡Puedes hacer BUZZ para intentarlo!</span>
+                    </div>`;
+                    notificationEl.style.display = 'block';
+
+                    // Hide notification after 3 seconds
+                    setTimeout(() => {
+                        if (notificationEl) {
+                            notificationEl.style.display = 'none';
+                        }
+                    }, 3000);
+
                     // Disable answer buttons (they'll be enabled when someone buzzes)
                     const buttons = document.querySelectorAll('.answer-btn');
                     buttons.forEach(btn => {
@@ -1212,6 +1221,7 @@ function renderBombaMusicalContent($currentRound)
                     const buzzBtn = document.getElementById('buzz-container');
                     if (buzzBtn) {
                         buzzBtn.style.display = 'block';
+                        buzzBtn.innerHTML = '<button type="button" class="buzz-btn" onclick="handleBuzz()">🚨 BUZZ!</button>';
                     }
 
                     // Clear buzz order
