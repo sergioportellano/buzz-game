@@ -1101,42 +1101,59 @@ function renderBombaMusicalContent($currentRound)
                 }
             }
 
-            // Visual Feedback - AGGRESSIVE COLOR APPLICATION
+            // Visual Feedback - DYNAMIC CSS CLASS APPROACH
             if (data.answer_index !== undefined) {
                 const buttons = document.querySelectorAll('.answer-btn');
                 if (buttons[data.answer_index]) {
                     const selectedButton = buttons[data.answer_index];
                     const color = data.correct ? '#4CAF50' : '#f44336';
                     const bgName = data.correct ? 'VERDE (correcta)' : 'ROJO (incorrecta)';
-
+                    
                     console.log(`🎨 Aplicando color ${bgName} al botón ${data.answer_index}`);
-
-                    // Remove all existing classes
-                    selectedButton.className = 'answer-btn';
-
-                    // Method 1: cssText (most aggressive)
-                    selectedButton.style.cssText = `
-                        background: ${color} !important;
-                        background-color: ${color} !important;
-                        color: white !important;
-                        border: 3px solid ${color} !important;
-                        opacity: 1 !important;
-                        cursor: default !important;
-                        font-weight: bold !important;
+                    
+                    // Create unique ID for this button
+                    const uniqueId = `answer-btn-${data.answer_index}-${Date.now()}`;
+                    selectedButton.id = uniqueId;
+                    
+                    // Inject CSS with maximum specificity
+                    const styleId = `style-${uniqueId}`;
+                    let styleTag = document.getElementById(styleId);
+                    if (!styleTag) {
+                        styleTag = document.createElement('style');
+                        styleTag.id = styleId;
+                        document.head.appendChild(styleTag);
+                    }
+                    
+                    styleTag.textContent = `
+                        #${uniqueId} {
+                            background: ${color} !important;
+                            background-color: ${color} !important;
+                            color: white !important;
+                            border: 3px solid ${color} !important;
+                            opacity: 1 !important;
+                            cursor: default !important;
+                            font-weight: bold !important;
+                        }
+                        #${uniqueId}:hover {
+                            background: ${color} !important;
+                            background-color: ${color} !important;
+                        }
+                        #${uniqueId}:disabled {
+                            background: ${color} !important;
+                            background-color: ${color} !important;
+                            color: white !important;
+                            opacity: 1 !important;
+                        }
                     `;
-
-                    // Method 2: Direct properties
-                    selectedButton.style.setProperty('background', color, 'important');
-                    selectedButton.style.setProperty('background-color', color, 'important');
-                    selectedButton.style.setProperty('color', 'white', 'important');
-
-                    // Method 3: Disable button
+                    
+                    // Also apply inline styles as backup
+                    selectedButton.style.backgroundColor = color;
+                    selectedButton.style.color = 'white';
                     selectedButton.disabled = true;
-
-                    // Force reflow
-                    void selectedButton.offsetHeight;
-
-                    console.log(`✅ Color aplicado. Verificación:`, {
+                    
+                    console.log(`✅ Color aplicado con ID: ${uniqueId}`);
+                    console.log(`   Verificación:`, {
+                        id: selectedButton.id,
                         backgroundColor: selectedButton.style.backgroundColor,
                         computedBg: window.getComputedStyle(selectedButton).backgroundColor
                     });
