@@ -458,7 +458,7 @@ function renderBuzzRapidoContent($currentRound)
         $text = is_array($option) ? ($option['respuesta'] ?? 'Opción') : $option;
 
         $optionsHtml .= '
-            <button class="answer-btn" onclick="handleAnswer(' . $index . ')">
+            <button class="answer-btn" onclick="handleAnswer(' . $index . ')" disabled>
                 ' . chr(65 + $index) . ') ' . htmlspecialchars($text) . '
             </button>
         ';
@@ -490,8 +490,8 @@ function renderBuzzRapidoContent($currentRound)
                 ⏳ 15s
             </div>
 
-            <!-- Answer Options (Hidden until Buzz) -->
-            <div id="answer-container" class="answers-grid" style="display: none;">
+            <!-- Answer Options (Visible but disabled until Buzz) -->
+            <div id="answer-container" class="answers-grid">
                 ' . $optionsHtml . '
             </div>
 
@@ -616,11 +616,18 @@ function renderBombaMusicalContent($currentRound)
             border-radius: 10px;
             font-size: 1.1em;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: background 0.3s, opacity 0.3s;
         }
 
         .answer-btn:hover:not(.correct-answer):not(.incorrect-answer):not(:disabled) {
             background: #505050;
+        }
+
+        .answer-btn:disabled {
+            background: #2a2a2a;
+            color: #666;
+            cursor: not-allowed;
+            opacity: 0.5;
         }
 
         .answer-btn.correct-answer {
@@ -909,19 +916,18 @@ function renderBombaMusicalContent($currentRound)
             const buzzContainer = document.getElementById('buzz-container');
             if (buzzContainer) buzzContainer.style.display = 'none';
 
-            // 2. Show Answer Options for EVERYONE
+            // 2. Enable/Disable answer buttons based on who buzzed
             const answerContainer = document.getElementById('answer-container');
             if (answerContainer) {
-                answerContainer.style.display = 'grid';
-
-                // 3. Disable buttons if NOT ME
                 const buttons = answerContainer.querySelectorAll('button');
                 buttons.forEach(btn => {
                     if (String(pId) !== String(playerId)) {
+                        // Not me - keep disabled
                         btn.disabled = true;
                         btn.style.opacity = '0.6';
                         btn.style.cursor = 'not-allowed';
                     } else {
+                        // It's me - enable buttons
                         btn.disabled = false;
                         btn.style.opacity = '1';
                         btn.style.cursor = 'pointer';
@@ -929,7 +935,7 @@ function renderBombaMusicalContent($currentRound)
                 });
             }
 
-            // 4. Start 8-second timer if I'm the one who buzzed
+            // 3. Start 8-second timer if I'm the one who buzzed
             if (String(pId) === String(playerId)) {
                 startAnswerTimer();
             }
