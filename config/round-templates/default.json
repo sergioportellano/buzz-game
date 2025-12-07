@@ -1,0 +1,21 @@
+{
+  "buzz_rapido": {
+    "puntos_correcto": 10,
+    "puntos_incorrecto": 0,
+    "duracion_respuesta": 10,
+    "mostrar_opciones": true
+  },
+  "todos_responden": {
+    "puntos_correcto": 5,
+    "puntos_incorrecto": 0,
+    "duracion_respuesta": 15,
+    "mostrar_opciones": true
+  },
+  "bomba_musical": {
+    "puntos_sobreviviente": 5,
+    "puntos_perdedor": 0,
+    "tiempo_min_explosion": 5,
+    "tiempo_max_explosion": 15,
+    "modo_puntos": "sobrevivientes"
+  }
+}

@@ -1,0 +1,35 @@
+# Vendor dependencies
+/vendor/
+
+# Configuration files with sensitive data
+/config/database.php
+/config/secrets.php
+
+# Logs
+*.log
+debug*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*~
+
+# Upload directories (optional - uncomment if you don't want to track uploads)
+# /public/uploads/
+
+# Node modules (if you add npm later)
+node_modules/
+
+# Environment files
+.env
+.env.local
