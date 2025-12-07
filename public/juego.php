@@ -1168,7 +1168,23 @@ function renderBombaMusicalContent($currentRound)
                 } else {
                     // Another player failed - allow rebote
                     console.log('🔄 Otro jugador falló, permitiendo rebote');
-
+                    
+                    // Show notification that player failed
+                    if (buzzContainer) {
+                        buzzContainer.innerHTML = `<div style="background: #ff5722; color: white; padding: 15px; border-radius: 10px; font-size: 1.1em; text-align: center; animation: pulse 0.5s;">
+                            ❌ Jugador ${data.playerId} ha fallado<br>
+                            <span style="font-size: 0.9em;">¡Puedes hacer BUZZ para intentarlo!</span>
+                        </div>`;
+                        buzzContainer.style.display = 'block';
+                        
+                        // Hide notification after 3 seconds
+                        setTimeout(() => {
+                            if (buzzContainer) {
+                                buzzContainer.innerHTML = '';
+                            }
+                        }, 3000);
+                    }
+                    
                     // Disable answer buttons (they'll be enabled when someone buzzes)
                     const buttons = document.querySelectorAll('.answer-btn');
                     buttons.forEach(btn => {
